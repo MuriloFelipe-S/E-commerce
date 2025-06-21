@@ -2,7 +2,9 @@ package service;
 
 
 import entity.Product;
+import exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import repository.ProductRepository;
 
@@ -18,19 +20,20 @@ public class ProductService {
         this.productRepository = productRepository; //inicializa o repositório de produtos
     }
 
-    public criarProduto(Product product){ //metodo para criar um produto
+    public Product criarProduto(Product product){ //metodo para criar um produto
         return productRepository.save(product); //salva o produto no banco de dados e retorna o produto salvo
     }
 
     public Product buscarProdutoPorId(Long id) { //metodo para buscar um produto por ID
-        return productRepository.findById(id).orElse(null); //retorna o produto se encontrado, caso contrário retorna null
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto com o ID "+ id + "nao foi encontrado")); //retorna o produto se encontrado, caso contrário lança uma exceção
     }
 
     public List<Product> buscarTodosProdutos() { //metodo para buscar todos os produtos
         return productRepository.findAll(); //retorna todos os produtos do banco de dados
     }
 
-    public AtualizarProduto(Long id, Product product) { //metodo para atualizar um produto
+    public Product AtualizarProduto(Long id, Product product) { //metodo para atualizar um produto
         if (!productRepository.existsById(id)) { //verifica se o produto existe pelo ID
             throw new RuntimeException("Produto não encontrado com o ID: " + id); //lança uma exceção se o produto não existir
         }
@@ -53,5 +56,11 @@ public class ProductService {
 
     public List<Product> buscarPorCategoria(String categoria) { //metodo para buscar produtos por categoria
         return productRepository.findBycategoria(categoria); //retorna os produtos da categoria especificada
+    }
+
+    public List<Product> listarProdutosAtivos() { //metodo para listar produtos ativos}
+        return productRepository.findAll().stream() //busca todos os produtos e filtra apenas os ativos
+                .filter(Product::isAtivo) //filtra os produtos que estão ativos
+                .toList(); //converte o resultado para uma lista
     }
 }
