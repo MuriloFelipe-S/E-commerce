@@ -4,6 +4,8 @@ import entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository // indica que essa interface é um repositório Spring Data JPA
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -12,4 +14,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // Exemplo:
     // List<Product> findByNameContaining(String name);
+
+     //metodo para buscar produtos por categoria
+
+    List<Product> findBycategoria(String categoria);
 }

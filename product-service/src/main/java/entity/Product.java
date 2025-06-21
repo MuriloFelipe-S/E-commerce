@@ -7,33 +7,48 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "product")
-@Entity
-@NoArgsConstructor
-@Getter
-@Setter
+@Table(name = "product") // nome da tabela no banco de dados
+@Entity // anotação que indica que essa classe é uma entidade JPA
+@NoArgsConstructor // construtor padrão sem argumentos, necessário para o JPA
+@Getter // Lombok para gerar os métodos getters automaticamente
+@Setter // Lombok para gerar os métodos setters automaticamente
 public class Product {
 
     @Id // referenciando Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // indicando ao banco que esse campo é autoincrement
 
-    @NotBlank(message = "campo id não pode ser vazio")
+    @NotBlank(message = "campo id não pode ser vazio") // validação de campo não pode ser vazio
     private Long id;
 
     @NotBlank(message = "campo nome não pode ser vazio")
-    private String name;
+    private String nome;
 
     @NotBlank(message = "campo descrição não pode ser vazio")
-    private String description;
+    private String descricao;
 
     @NotBlank(message = "campo preço não pode ser vazio")
-    private Double price;
+    private Double preco;
 
-    public Product(Long id, String name, String description, Double price) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
+    @NotBlank(message = "campo estoque não pode ser vazio")
+    private Integer estoque;
+
+    @NotBlank(message = "campo categoria não pode ser vazio")
+    private String categoria;
+
+    @NotBlank(message = "campo imagem não pode ser vazio")
+    private String imageUrl;
+
+    @NotBlank(message = "campo disponibilidade não pode ser vazio")
+    private boolean ativo;
+
+    public Product(String nome, String descricao, Double preco, Integer estoque, String categoria, String imageUrl, boolean ativo) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.estoque = estoque;
+        this.categoria = categoria;
+        this.imageUrl = imageUrl;
+        this.ativo = ativo;
     }
 
 }
