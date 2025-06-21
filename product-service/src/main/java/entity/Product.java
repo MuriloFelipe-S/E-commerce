@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Table(name = "product") // nome da tabela no banco de dados
 @Entity // anotação que indica que essa classe é uma entidade JPA
 @NoArgsConstructor // construtor padrão sem argumentos, necessário para o JPA
@@ -27,7 +29,7 @@ public class Product {
     private String descricao;
 
     @NotBlank(message = "campo preço não pode ser vazio")
-    private Double preco;
+    private BigDecimal preco;
 
     @NotBlank(message = "campo estoque não pode ser vazio")
     private Integer estoque;
@@ -41,7 +43,7 @@ public class Product {
     @NotBlank(message = "campo disponibilidade não pode ser vazio")
     private boolean ativo;
 
-    public Product(String nome, String descricao, Double preco, Integer estoque, String categoria, String imageUrl, boolean ativo) {
+    public Product(String nome, String descricao, BigDecimal preco, Integer estoque, String categoria, String imageUrl, boolean ativo) {
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;

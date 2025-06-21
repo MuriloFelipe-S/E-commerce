@@ -4,10 +4,12 @@ package service;
 import entity.Product;
 import exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import repository.ProductRepository;
-
+import java.lang.reflect.Field;
+import java.util.Map;
+import org.springframework.util.ReflectionUtils;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -21,19 +23,22 @@ public class ProductService {
     }
 
     public Product criarProduto(Product product){ //metodo para criar um produto
+        if (product.getPreco().compareTo(BigDecimal.ZERO) <= 0) { //verifica se o preço do produto é menor ou igual a zero
+            throw new IllegalArgumentException("O preço do produto deve ser maior que zero"); //lança uma exceção se o preço for inválido
+        }
         return productRepository.save(product); //salva o produto no banco de dados e retorna o produto salvo
     }
 
     public Product buscarProdutoPorId(Long id) { //metodo para buscar um produto por ID
         return productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Produto com o ID "+ id + "nao foi encontrado")); //retorna o produto se encontrado, caso contrário lança uma exceção
+                .orElseThrow(() -> new ResourceNotFoundException("Produto com o ID " + id + " não foi encontrado.")); //retorna o produto se encontrado, caso contrário lança uma exceção
     }
 
     public List<Product> buscarTodosProdutos() { //metodo para buscar todos os produtos
         return productRepository.findAll(); //retorna todos os produtos do banco de dados
     }
 
-    public Product AtualizarProduto(Long id, Product product) { //metodo para atualizar um produto
+    public Product atualizarProduto(Long id, Product product) { //metodo para atualizar um produto
         if (!productRepository.existsById(id)) { //verifica se o produto existe pelo ID
             throw new RuntimeException("Produto não encontrado com o ID: " + id); //lança uma exceção se o produto não existir
         }
@@ -55,7 +60,7 @@ public class ProductService {
     }
 
     public List<Product> buscarPorCategoria(String categoria) { //metodo para buscar produtos por categoria
-        return productRepository.findBycategoria(categoria); //retorna os produtos da categoria especificada
+        return productRepository.findByCategoria(categoria); //retorna os produtos da categoria especificada
     }
 
     public List<Product> listarProdutosAtivos() { //metodo para listar produtos ativos}
@@ -63,4 +68,29 @@ public class ProductService {
                 .filter(Product::isAtivo) //filtra os produtos que estão ativos
                 .toList(); //converte o resultado para uma lista
     }
+
+    public Product atualizarParcialmente(Long id, Map<String, Object> campos) {
+        Product produto = buscarProdutoPorId(id); //buscando produto pelo ID
+        boolean alterado = false; //criando uma variável para verificar se houve alteração
+
+        for (Map.Entry<String, Object> entry : campos.entrySet()) { //iterando sobre os campos a serem atualizados
+            Field field = ReflectionUtils.findField(Product.class, entry.getKey()); //mapeando o nome do campo para o objeto Field correspondente na classe Product
+            if (field != null) { //verificando se o campo existe
+                field.setAccessible(true); //tornando o campo acessivel para escrita
+                Object valorAtual = ReflectionUtils.getField(field, produto); //pegando o valor atual do campo no produto
+                if ((valorAtual == null && entry.getValue() != null) || //verificando se o valor atual é nulo e o novo valor não é nulo
+                        (valorAtual != null && !valorAtual.equals(entry.getValue()))) { //ou se o valor atual é diferente do novo valor
+                    ReflectionUtils.setField(field, produto, entry.getValue());//atualizando o campo com o novo valor
+                    alterado = true; //marcando que uma alteração foi feita
+                }
+            }
+        }
+
+        if (!alterado) { //verificando se realmente houve alguma alteração
+            throw new IllegalArgumentException("Nenhuma alteração feita"); //lancando uma exceção se não houve alteração
+        }
+
+        return productRepository.save(produto); //salvando o produto atualizado no banco e retornando o produto atualizado
+    }
+
 }

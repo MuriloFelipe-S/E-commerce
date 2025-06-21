@@ -17,5 +17,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
      //metodo para buscar produtos por categoria
 
-    List<Product> findBycategoria(String categoria);
+    List<Product> findByCategoria(String categoria);
 }
