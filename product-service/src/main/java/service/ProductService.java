@@ -1,6 +1,7 @@
 package service;
 
 
+import DTO.ProductRequest;
 import entity.Product;
 import exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,26 @@ public class ProductService {
         this.productRepository = productRepository; //inicializa o repositório de produtos
     }
 
-    public Product criarProduto(Product product){ //metodo para criar um produto
-        if (product.getPreco().compareTo(BigDecimal.ZERO) <= 0) { //verifica se o preço do produto é menor ou igual a zero
+    public Product criarProduto(ProductRequest request){ //metodo para criar um produto
+        if (request.preco().compareTo(BigDecimal.ZERO) <= 0) { //verifica se o preço do produto é menor ou igual a zero
             throw new IllegalArgumentException("O preço do produto deve ser maior que zero"); //lança uma exceção se o preço for inválido
         }
-        return productRepository.save(product); //salva o produto no banco de dados e retorna o produto salvo
+
+        Product produto = new Product(); //convertendo o DTO de requisição para uma entidade Product para salvar no banco de dados
+        produto.setNome(request.nome()); //seta o nome do produto
+        produto.setDescricao(request.descricao()); //seta a descrição do produto
+        produto.setPreco(request.preco()); //seta o preço do produto
+        produto.setEstoque(request.estoque()); //seta o estoque do produto
+        produto.setCategoria(request.categoria()); //seta a categoria do produto
+        produto.setImageUrl(request.imageUrl()); //seta a URL da imagem do produto
+        produto.setAtivo(request.ativo()); //seta a disponibilidade do produto
+
+        return productRepository.save(produto); //salva o produto no banco de dados e retorna o produto salvo
+
     }
 
     public Product buscarProdutoPorId(Long id) { //metodo para buscar um produto por ID
-        return productRepository.findById(id)
+        return productRepository.findById(id) //busca o produto pelo ID no repositório
                 .orElseThrow(() -> new ResourceNotFoundException("Produto com o ID " + id + " não foi encontrado.")); //retorna o produto se encontrado, caso contrário lança uma exceção
     }
 

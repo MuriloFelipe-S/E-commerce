@@ -2,9 +2,10 @@ package DTO;
 
 import jakarta.validation.constraints.NotBlank;
 
+
 import java.math.BigDecimal;
 
-public record ProductRequest(
+public record ProductRequest( // DTO para representar a requisição de criação ou atualização de um produto
 
     @NotBlank(message = "campo nome não pode ser vazio")
     String nome,

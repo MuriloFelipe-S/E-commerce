@@ -1,13 +1,15 @@
 package controller;
 
+import DTO.ProductRequest;
+import DTO.ProductResponse;
 import entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import service.ProductService;
+
+import java.net.URI;
 import java.util.List;
 
 @Controller
@@ -16,6 +18,26 @@ public class ProductController {
 
     @Autowired
     private ProductService productService; // Injetando o serviço de produtos
+
+    private ProductResponse toResponse(Product product) { //metodo para converter o produto em um DTO de resposta
+        return new ProductResponse( //Cria um novo ProductResponse com os dados do produto
+                product.getId(),
+                product.getNome(),
+                product.getDescricao(),
+                product.getPreco(),
+                product.getEstoque(),
+                product.getCategoria(),
+                product.getImageUrl(),
+                product.isAtivo()
+        );
+    }
+
+    @PostMapping
+    public ResponseEntity<ProductResponse> criarProduto(@RequestBody @PathVariable ProductRequest productRequest) {
+        Product product = productService.criarProduto(productRequest); //
+        return ResponseEntity.created(URI.create("/api/products/" + product.getId())) // retorna a URI do novo produto criado "URI" é um identificador de recurso uniforme, usado para identificar recursos na web
+                .body(toResponse(product)); // Retorna o produto criado com o status 201 Created
+    }
 
     @GetMapping
     public ResponseEntity<List<Product>> buscarTodosProdutos() {
@@ -29,8 +51,8 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> buscarProdutoPorId(@PathVariable Long id) {
-        Product product = productService.buscarProdutoPorId(id); // Busca o produto pelo ID usando o serviço
-        return ResponseEntity.ok(product); // Retorna o produto encontrado
+    public ResponseEntity<ProductResponse> buscarProdutoPorId(@PathVariable Long id) {
+        Product productAtualizado = productService.buscarProdutoPorId(id); // Busca o produto pelo ID usando o serviço
+        return ResponseEntity.ok(toResponse(productAtualizado)); // Retorna o produto encontrado
     }
 }
