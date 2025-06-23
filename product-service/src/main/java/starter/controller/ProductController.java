@@ -1,23 +1,27 @@
-package controller;
+package starter.controller;
 
-import DTO.ProductRequest;
-import DTO.ProductResponse;
-import entity.Product;
+import starter.DTO.ProductRequest;
+import starter.DTO.ProductResponse;
+import starter.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import service.ProductService;
+import starter.service.ProductService;
 
 import java.net.URI;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/products")
 public class ProductController {
 
     @Autowired
     private ProductService productService; // Injetando o serviço de produtos
+
+    @GetMapping("/test")
+    public ResponseEntity<String> testandoAPI() {
+        return ResponseEntity.ok("API de Produtos está funcionando!"); // Retorna uma mensagem de teste para verificar se a API está funcionando
+    }
 
     private ProductResponse toResponse(Product product) { //metodo para converter o produto em um DTO de resposta
         return new ProductResponse( //Cria um novo ProductResponse com os dados do produto
@@ -33,7 +37,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> criarProduto(@RequestBody @PathVariable ProductRequest productRequest) {
+    public ResponseEntity<ProductResponse> criarProduto(@RequestBody ProductRequest productRequest) {
         Product product = productService.criarProduto(productRequest); //
         return ResponseEntity.created(URI.create("/api/products/" + product.getId())) // retorna a URI do novo produto criado "URI" é um identificador de recurso uniforme, usado para identificar recursos na web
                 .body(toResponse(product)); // Retorna o produto criado com o status 201 Created

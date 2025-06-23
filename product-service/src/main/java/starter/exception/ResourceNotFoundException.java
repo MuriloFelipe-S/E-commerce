@@ -1,4 +1,4 @@
-package exception;
+package starter.exception;
 
 public class ResourceNotFoundException extends RuntimeException{
     public ResourceNotFoundException(String message) {

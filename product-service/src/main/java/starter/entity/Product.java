@@ -1,12 +1,12 @@
-package entity;
+package starter.entity;
 
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.math.BigDecimal;
 
 @Table(name = "product") // nome da tabela no banco de dados
@@ -18,8 +18,6 @@ public class Product {
 
     @Id // referenciando Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // indicando ao banco que esse campo é autoincrement
-
-    @NotBlank(message = "campo id não pode ser vazio") // validação de campo não pode ser vazio
     private Long id;
 
     @NotBlank(message = "campo nome não pode ser vazio")
@@ -28,19 +26,18 @@ public class Product {
     @NotBlank(message = "campo descrição não pode ser vazio")
     private String descricao;
 
-    @NotBlank(message = "campo preço não pode ser vazio")
+    @NotNull(message = "campo preço não pode ser vazio")
     private BigDecimal preco;
 
-    @NotBlank(message = "campo estoque não pode ser vazio")
+    @NotNull(message = "campo estoque não pode ser vazio")
     private Integer estoque;
 
     @NotBlank(message = "campo categoria não pode ser vazio")
     private String categoria;
 
-    @NotBlank(message = "campo imagem não pode ser vazio")
     private String imageUrl;
 
-    @NotBlank(message = "campo disponibilidade não pode ser vazio")
+    @NotNull(message = "campo disponibilidade não pode ser vazio")
     private boolean ativo;
 
     public Product(String nome, String descricao, BigDecimal preco, Integer estoque, String categoria, String imageUrl, boolean ativo) {

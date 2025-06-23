@@ -1,6 +1,7 @@
-package DTO;
+package starter.DTO;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 
 import java.math.BigDecimal;
@@ -9,16 +10,22 @@ public record ProductRequest( // DTO para representar a requisição de criaçã
 
     @NotBlank(message = "campo nome não pode ser vazio")
     String nome,
+
     @NotBlank(message = "campo descrição não pode ser vazio")
     String descricao,
-    @NotBlank(message = "campo preço não pode ser vazio")
+
+    @NotNull(message = "campo preço não pode ser vazio")
     BigDecimal preco,
-    @NotBlank(message = "campo estoque não pode ser vazio")
+
+    @NotNull(message = "campo estoque não pode ser vazio")
     Integer estoque,
+
     @NotBlank(message = "campo categoria não pode ser vazio")
     String categoria,
 
+    @NotBlank(message = "campo imageUrl não pode ser vazio")
     String imageUrl,
+
     boolean ativo
 
 ){}

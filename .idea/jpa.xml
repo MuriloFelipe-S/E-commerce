@@ -6,9 +6,9 @@
   </component>
   <component name="PersistenceUnitSettings">
     <persistence-units>
-      <persistence-unit name="Default">
+      <persistence-unit moduleName="product-service" name="Default">
         <packages>
-          <package value="microservice.mensageria" />
+          <package value="" />
         </packages>
       </persistence-unit>
     </persistence-units>

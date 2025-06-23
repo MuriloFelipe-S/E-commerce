@@ -1,12 +1,12 @@
-package service;
+package starter.service;
 
 
-import DTO.ProductRequest;
-import entity.Product;
-import exception.ResourceNotFoundException;
+import starter.DTO.ProductRequest;
+import starter.entity.Product;
+import starter.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repository.ProductRepository;
+import starter.repository.ProductRepository;
 import java.lang.reflect.Field;
 import java.util.Map;
 import org.springframework.util.ReflectionUtils;
