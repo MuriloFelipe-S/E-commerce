@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import starter.service.ProductService;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductResponse> criarProduto(@RequestBody @Valid ProductRequest productRequest) {
-        Product product = productService.criarProduto(productRequest); //
+        Product product = productService.criarProduto(productRequest); // Cria um novo produto usando o serviço, passando o DTO de requisição
         return ResponseEntity.created(URI.create("/api/products/" + product.getId())) // retorna a URI do novo produto criado "URI" é um identificador de recurso uniforme, usado para identificar recursos na web
                 .body(toResponse(product)); // Retorna o produto criado com o status 201 Created
     }
@@ -68,6 +69,12 @@ public class ProductController {
         return ResponseEntity.ok(produtosAtivos); // Retorna a lista de produtos ativos encontrados
     }
 
+    @GetMapping("/search/inativo")
+    public ResponseEntity<List<Product>> buscarProdutosInativos() {
+        List<Product> produtosInativos = productService.listarProdutosInativos();
+        return ResponseEntity.ok(produtosInativos); // Retorna a lista de produtos inativos encontrados
+    }
+
     @PutMapping("{id}")
     public ResponseEntity<ProductResponse> atualizar(@PathVariable Long id, @RequestBody @Valid ProductRequest productRequest) { // anotacoes @PathVariable e @RequestBody são usadas para capturar o ID do produto da URL, @Valid é usado para validar o DTO de requisição
         Product productAtualizado = productService.atualizarProduto(id, productRequest); // Atualiza o produto com os dados do DTO de requisição
@@ -79,4 +86,25 @@ public class ProductController {
         Product productAtualizado = productService.atualizarParcialmente(id, campos); // Atualiza parcialmente o produto com os dados do DTO de requisição
         return ResponseEntity.ok(toResponse(productAtualizado)); // Retorna o produto atualizado
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletarProduto(@PathVariable Long id) {
+        productService.deletarProduto(id); // Deleta o produto pelo ID usando o serviço
+        return ResponseEntity.noContent().build(); // Retorna o status 204 No Content indicando que a operação foi bem-sucedida
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Map<String, Object>> deletarVariosProdutos(@RequestBody List<Long> ids) {
+        List<Long> idsNaoEncontrados = productService.deletarVariosProdutos(ids); // Busca IDs que não foram encontrados
+        Map<String, Object> response = new HashMap<>(); // Cria um mapa para armazenar a resposta
+
+        response.put("mensagem", "Produtos deletados com sucesso"); // Adiciona uma mensagem de sucesso ao mapa
+
+        response.put("NaoEncontrados", idsNaoEncontrados); // Adiciona os IDs não encontrados ao mapa
+
+        productService.deletarVariosProdutos(ids); // Deleta vários produtos usando o serviço
+        return ResponseEntity.ok(response); // Retorna o status 204 No Content indicando que a operação foi bem-sucedida
+    }
+
+
 }

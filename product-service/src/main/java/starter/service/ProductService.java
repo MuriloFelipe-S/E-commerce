@@ -1,7 +1,5 @@
 package starter.service;
 
-
-import org.apache.coyote.BadRequestException;
 import starter.DTO.ProductRequest;
 import starter.entity.Product;
 import starter.exception.ResourceNotFoundException;
@@ -68,6 +66,25 @@ public class ProductService {
         productRepository.deleteById(id); //deleta o produto do banco de dados pelo ID
     }
 
+    public List<Long> deletarVariosProdutos(List<Long> ids) { //metodo para deletar varios produtos
+        List<Product> produtos = productRepository.findAllById(ids); //busca todos os produtos pelos IDs
+
+        List<Long> encontrados = produtos.stream()//filtra os produtos encontrados
+                        .map(Product::getId)//pega o ID de cada produto encontrado
+                        .toList();//converte o resultado para uma lista de IDs encontrados
+
+        List<Long> naoEncontrados = ids.stream()//filtra os IDs que não foram encontrados
+                        .filter(id -> !encontrados.contains(id))// verifica se o ID não está na lista de IDs encontrados
+                        .toList();// converte o resultado para uma lista de IDs não encontrados
+
+        if (!naoEncontrados.isEmpty()) {// verifica se existem IDs não encontrados
+            System.out.println("Os seguintes IDs não foram encontrados: {}" + naoEncontrados);// imprime os IDs não encontrados no console
+        }
+
+        productRepository.deleteAllInBatch(produtos);// deleta todos os produtos encontrados em lote
+        return naoEncontrados;// retorna a lista de IDs não encontrados
+    }
+
     public List<Product> buscarPorCategoria(String categoria) { //metodo para buscar produtos por categoria
         return productRepository.findByCategoria(categoria); //retorna os produtos da categoria especificada
     }
@@ -79,6 +96,7 @@ public class ProductService {
     }
 
     public Product atualizarParcialmente(Long id, Map<String, Object> campos) {
+
         Product produto = buscarProdutoPorId(id); //buscando produto pelo ID
         boolean alterado = false; //criando uma variável para verificar se houve alteração
 
@@ -117,7 +135,13 @@ public class ProductService {
         }
 
         return productRepository.save(produto); //salvando o produto atualizado no banco e retornando o produto atualizado
+
     }
 
+    public List<Product> listarProdutosInativos() { //metodo para listar produtos inativos
+        return productRepository.findAll().stream() //busca todos os produtos e filtra apenas os inativos
+                .filter(product -> !product.isAtivo()) //filtra os produtos que estão inativos
+                .toList(); //converte o resultado para uma lista
+    }
 
 }
