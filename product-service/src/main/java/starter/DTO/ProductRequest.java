@@ -23,7 +23,6 @@ public record ProductRequest( // DTO para representar a requisição de criaçã
     @NotBlank(message = "campo categoria não pode ser vazio")
     String categoria,
 
-    @NotBlank(message = "campo imageUrl não pode ser vazio")
     String imageUrl,
 
     boolean ativo
