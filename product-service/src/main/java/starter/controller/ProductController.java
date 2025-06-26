@@ -42,7 +42,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductResponse> criarProduto(@RequestBody @Valid ProductRequest productRequest) {
         Product product = productService.criarProduto(productRequest); // Cria um novo produto usando o serviço, passando o DTO de requisição
-        return ResponseEntity.created(URI.create("/api/products/" + product.getId())) // retorna a URI do novo produto criado "URI" é um identificador de recurso uniforme, usado para identificar recursos na web
+        return ResponseEntity.created(URI.create("/products/" + product.getId())) // retorna a URI do novo produto criado "URI" é um identificador de recurso uniforme, usado para identificar recursos na web
                 .body(toResponse(product)); // Retorna o produto criado com o status 201 Created
     }
 
@@ -58,14 +58,25 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> buscarTodosProdutos() {
-        return ResponseEntity.ok(productService.buscarTodosProdutos()); // Retorna todos os produtos
+    public ResponseEntity<List<ProductResponse>> buscarTodosProdutos() {
+        List<Product> produtos = productService.buscarTodosProdutos(); // Busca todos os produtos usando o serviço
+
+        List<ProductResponse> response = produtos.stream() // Converte a lista de produtos encontrados em uma lista de ProductResponse
+                .map(this::toResponse) // Mapeia cada produto para um ProductResponse
+                .toList(); // Coleta os resultados em uma lista
+
+        return ResponseEntity.ok(response); // Retorna todos os produtos
     }
 
     @GetMapping("/search/{categoria}")
-    public ResponseEntity<List<Product>> buscarProdutosPorCategoria(@PathVariable String categoria) { // metodo para buscar produtos por categoria @PathVariable é usado para capturar o valor da variável de caminho na URL
+    public ResponseEntity<List<ProductResponse>> buscarProdutosPorCategoria(@PathVariable String categoria) { // metodo para buscar produtos por categoria @PathVariable é usado para capturar o valor da variável de caminho na URL
         List<Product> produtos = productService.buscarPorCategoria(categoria); // Busca produtos por categoria usando o serviço
-        return ResponseEntity.ok(produtos); // Retorna a lista de produtos encontrados
+
+        List<ProductResponse> response = produtos.stream() // Converte a lista de produtos encontrados em uma lista de ProductResponse
+                .map(this::toResponse) // Mapeia cada produto para um ProductResponse
+                .toList(); // Coleta os resultados em uma lista
+
+        return ResponseEntity.ok(response); // Retorna a lista de produtos encontrados
     }
 
     @GetMapping("/{id}")
@@ -75,15 +86,25 @@ public class ProductController {
     }
 
     @GetMapping("/search/ativo")
-    public ResponseEntity<List<Product>> buscarProdutosAtivos() {
+    public ResponseEntity<List<ProductResponse>> buscarProdutosAtivos() {
         List<Product> produtosAtivos = productService.listarProdutosAtivos(); // Busca produtos ativos usando o serviço
-        return ResponseEntity.ok(produtosAtivos); // Retorna a lista de produtos ativos encontrados
+
+        List<ProductResponse> response = produtosAtivos.stream() // Converte a lista de produtos ativos encontrados em uma lista de ProductResponse
+                .map(this::toResponse) // Mapeia cada produto ativo para um ProductResponse
+                .toList(); // Coleta os resultados em uma lista
+
+        return ResponseEntity.ok(response); // Retorna a lista de produtos ativos encontrados
     }
 
     @GetMapping("/search/inativo")
-    public ResponseEntity<List<Product>> buscarProdutosInativos() {
+    public ResponseEntity<List<ProductResponse>> buscarProdutosInativos() {
         List<Product> produtosInativos = productService.listarProdutosInativos();
-        return ResponseEntity.ok(produtosInativos); // Retorna a lista de produtos inativos encontrados
+
+        List<ProductResponse> response = produtosInativos.stream() // Converte a lista de produtos inativos encontrados em uma lista de ProductResponse
+                .map(this::toResponse) // Mapeia cada produto inativo para um ProductResponse
+                .toList(); // Coleta os resultados em uma lista
+
+        return ResponseEntity.ok(response); // Retorna a lista de produtos inativos encontrados
     }
 
     @PutMapping("{id}")
@@ -107,13 +128,11 @@ public class ProductController {
     @DeleteMapping("/delete")
     public ResponseEntity<Map<String, Object>> deletarVariosProdutos(@RequestBody List<Long> ids) {
         List<Long> idsNaoEncontrados = productService.deletarVariosProdutos(ids); // Busca IDs que não foram encontrados
+
         Map<String, Object> response = new HashMap<>(); // Cria um mapa para armazenar a resposta
-
         response.put("mensagem", "Produtos deletados com sucesso"); // Adiciona uma mensagem de sucesso ao mapa
+        response.put("naoEncontrados", idsNaoEncontrados); // Adiciona os IDs não encontrados ao mapa
 
-        response.put("NaoEncontrados", idsNaoEncontrados); // Adiciona os IDs não encontrados ao mapa
-
-        productService.deletarVariosProdutos(ids); // Deleta vários produtos usando o serviço
         return ResponseEntity.ok(response); // Retorna o status 204 No Content indicando que a operação foi bem-sucedida
     }
 
