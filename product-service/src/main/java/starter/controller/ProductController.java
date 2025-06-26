@@ -46,6 +46,12 @@ public class ProductController {
                 .body(toResponse(product)); // Retorna o produto criado com o status 201 Created
     }
 
+    @PostMapping("/criar-varios")
+    public ResponseEntity<List<ProductResponse>> criarVarios(@RequestBody @Valid List<ProductRequest> productRequests) {
+        List<Product> produtosCriados = productService.criarVariosProdutos(productRequests); // Cria vários produtos usando o serviço, passando a lista de DTOs de requisição
+        return ResponseEntity.ok(produtosCriados); // Retorna a lista de produtos criados com o status 200 OK
+    }
+
     @GetMapping
     public ResponseEntity<List<Product>> buscarTodosProdutos() {
         return ResponseEntity.ok(productService.buscarTodosProdutos()); // Retorna todos os produtos

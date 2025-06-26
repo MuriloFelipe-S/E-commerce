@@ -15,6 +15,7 @@ import org.springframework.util.ReflectionUtils;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -28,6 +29,12 @@ public class ProductService {
         preencherProduct(produto, request); //preenche os dados do produto com os dados do DTO de requisição
 
         return productRepository.save(produto); //salva o produto no banco de dados e retorna o produto salvo
+    }
+
+    public List<Product> criarVariosProdutos(List<ProductRequest> productRequests) { //metodo para criar varios produtos de uma so vez
+        return productRequests.stream() //cria um fluxo de ProductRequest a partir da lista de ProductRequest
+                .map(this::criarProduto)//para cada ProductRequest, chama o metodo criarProduto para criar um Product
+                .collect(Collectors.toList()); //mapeia cada ProductRequest para um Product e coleta em uma lista
     }
 
     public Product buscarProdutoPorId(Long id) { //metodo para buscar um produto por ID
