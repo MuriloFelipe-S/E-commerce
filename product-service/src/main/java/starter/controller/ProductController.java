@@ -49,7 +49,12 @@ public class ProductController {
     @PostMapping("/criar-varios")
     public ResponseEntity<List<ProductResponse>> criarVarios(@RequestBody @Valid List<ProductRequest> productRequests) {
         List<Product> produtosCriados = productService.criarVariosProdutos(productRequests); // Cria vários produtos usando o serviço, passando a lista de DTOs de requisição
-        return ResponseEntity.ok(produtosCriados); // Retorna a lista de produtos criados com o status 200 OK
+
+        List<ProductResponse> response = produtosCriados.stream() // Converte a lista de produtos criados em uma lista de ProductResponse
+                .map(this::toResponse) // Mapeia cada produto para um ProductResponse
+                .toList(); // Coleta os resultados em uma lista
+
+        return ResponseEntity.ok(response); // Retorna a lista de produtos criados com o status 200 OK
     }
 
     @GetMapping
