@@ -119,6 +119,12 @@ public class ProductController {
         return ResponseEntity.ok(toResponse(productAtualizado)); // Retorna o produto atualizado
     }
 
+    @PatchMapping("{id}/estoque")
+    public ResponseEntity<ProductResponse> atualizarEstoque(@PathVariable Long id, @RequestBody Integer estoque) {
+        ProductResponse productAtualizado = productService.atualizarEstoque(id, estoque); // Atualiza o estoque do produto com o ID fornecido
+        return ResponseEntity.ok(productAtualizado); // Retorna o produto atualizado
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deletarProduto(@PathVariable Long id) {
         productService.deletarProduto(id); // Deleta o produto pelo ID usando o serviço

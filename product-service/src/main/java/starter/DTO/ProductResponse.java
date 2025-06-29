@@ -1,5 +1,7 @@
 package starter.DTO;
 
+import starter.entity.Product;
+
 import java.math.BigDecimal;
 
 public record ProductResponse( // DTO para representar a resposta do produto
@@ -14,4 +16,17 @@ public record ProductResponse( // DTO para representar a resposta do produto
     String imageUrl,
     boolean ativo
 
-){}
+){
+    public ProductResponse(Product product) { // Construtor que recebe um Product e inicializa o DTO
+        this(
+            product.getId(),
+            product.getNome(),
+            product.getDescricao(),
+            product.getPreco(),
+            product.getEstoque(),
+            product.getCategoria(),
+            product.getImageUrl(),
+            product.isAtivo()
+        );
+    }
+}

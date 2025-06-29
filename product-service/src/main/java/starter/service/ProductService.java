@@ -1,21 +1,20 @@
 package starter.service;
 
 import starter.DTO.ProductRequest;
+import starter.DTO.ProductResponse;
 import starter.entity.Product;
 import starter.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import starter.repository.ProductRepository;
-
 import java.lang.reflect.Field;
 import java.util.Map;
-
 import org.springframework.util.ReflectionUtils;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @Service
 public class ProductService {
@@ -97,9 +96,7 @@ public class ProductService {
     }
 
     public List<Product> listarProdutosAtivos() { //metodo para listar produtos ativos
-        return productRepository.findAll().stream() //busca todos os produtos e filtra apenas os ativos
-                .filter(Product::isAtivo) //filtra os produtos que estão ativos
-                .toList(); //converte o resultado para uma lista
+        return productRepository.findByAtivoTrue(); //retorna os produtos ativos do banco de dados
     }
 
     public Product atualizarParcialmente(Long id, Map<String, Object> campos) {
@@ -145,10 +142,18 @@ public class ProductService {
 
     }
 
+    public ProductResponse atualizarEstoque(Long id, Integer estoque) { //metodo para atualizar o estoque de um produto
+        if (estoque < 0){
+            throw new IllegalArgumentException("Estoque nao pode ser menor que zero"); //verifica se o estoque é negativo
+        }
+        Product produto = buscarProdutoPorId(id); //busca o produto pelo ID
+        produto.setEstoque(estoque);
+        productRepository.save(produto); //atualiza o estoque do produto no banco de dados
+        return new ProductResponse(produto); //atualiza o estoque do produto e retorna o produto atualizado como ProductResponse
+    }
+
     public List<Product> listarProdutosInativos() { //metodo para listar produtos inativos
-        return productRepository.findAll().stream() //busca todos os produtos e filtra apenas os inativos
-                .filter(product -> !product.isAtivo()) //filtra os produtos que estão inativos
-                .toList(); //converte o resultado para uma lista
+        return productRepository.findByAtivoFalse(); //retorna os produtos inativos do banco de dados
     }
 
 }
