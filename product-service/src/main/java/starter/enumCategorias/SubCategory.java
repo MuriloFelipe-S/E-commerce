@@ -52,7 +52,7 @@ public enum SubCategory {
     SWITCH(ProductCategory.REDES),
     REPEATER(ProductCategory.REDES),
     PONTO_DE_ACESSO(ProductCategory.REDES),
-    CABO_REDE(ProductCategory.REDES),
+    CABO_REDE(ProductCategory.REDES);
 
 
     private final  ProductCategory categoria;

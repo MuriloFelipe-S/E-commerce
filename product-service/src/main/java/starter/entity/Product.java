@@ -43,7 +43,7 @@ public class Product {
     @NotNull(message = "campo disponibilidade não pode ser vazio")
     private boolean ativo;
 
-    public Product(String nome, String descricao, BigDecimal preco, Integer estoque, String categoria, String imageUrl, boolean ativo) {
+    public Product(String nome, String descricao, BigDecimal preco, Integer estoque, ProductCategory categoria, String imageUrl, boolean ativo) {
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
