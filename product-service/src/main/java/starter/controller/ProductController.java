@@ -7,6 +7,7 @@ import starter.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import starter.enumCategorias.ProductCategory;
 import starter.service.ProductService;
 
 import java.net.URI;
@@ -69,11 +70,11 @@ public class ProductController {
     }
 
     @GetMapping("/search/{categoria}")
-    public ResponseEntity<List<ProductResponse>> buscarProdutosPorCategoria(@PathVariable String categoria) { // metodo para buscar produtos por categoria @PathVariable é usado para capturar o valor da variável de caminho na URL
+    public ResponseEntity<List<ProductResponse>> buscarProdutosPorCategoria(@PathVariable ProductCategory categoria) { // metodo para buscar produtos por categoria @PathVariable é usado para capturar o valor da variável de caminho na URL
         List<Product> produtos = productService.buscarPorCategoria(categoria); // Busca produtos por categoria usando o serviço
 
         List<ProductResponse> response = produtos.stream() // Converte a lista de produtos encontrados em uma lista de ProductResponse
-                .map(this::toResponse) // Mapeia cada produto para um ProductResponse
+                .map(ProductResponse::new) // Mapeia cada produto para um ProductResponse
                 .toList(); // Coleta os resultados em uma lista
 
         return ResponseEntity.ok(response); // Retorna a lista de produtos encontrados

@@ -2,6 +2,7 @@ package starter.DTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import starter.enumCategorias.ProductCategory;
 
 
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ public record ProductRequest( // DTO para representar a requisição de criaçã
     Integer estoque,
 
     @NotBlank(message = "campo categoria não pode ser vazio")
-    String categoria,
+    ProductCategory categoria,
 
     String imageUrl,
 

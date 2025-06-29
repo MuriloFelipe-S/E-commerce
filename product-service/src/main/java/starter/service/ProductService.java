@@ -3,11 +3,16 @@ package starter.service;
 import starter.DTO.ProductRequest;
 import starter.DTO.ProductResponse;
 import starter.entity.Product;
+import starter.enumCategorias.ProductCategory;
+import starter.enumCategorias.SubCategory;
 import starter.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import starter.repository.ProductRepository;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Map;
 import org.springframework.util.ReflectionUtils;
 import java.math.BigDecimal;
@@ -91,8 +96,14 @@ public class ProductService {
         return naoEncontrados;// retorna a lista de IDs não encontrados
     }
 
-    public List<Product> buscarPorCategoria(String categoria) { //metodo para buscar produtos por categoria
+    public List<Product> buscarPorCategoria(ProductCategory categoria) { //metodo para buscar produtos por categoria
         return productRepository.findByCategoria(categoria); //retorna os produtos da categoria especificada
+    }
+
+    public List<SubCategory> ListarSubCategorias(ProductCategory category){
+        return Arrays.stream(SubCategory.values())
+                .filter(sc -> sc.getCategoria() == category) //filtra as subcategorias que pertencem à categoria especificada
+                .toList();
     }
 
     public List<Product> listarProdutosAtivos() { //metodo para listar produtos ativos

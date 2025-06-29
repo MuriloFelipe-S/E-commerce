@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import starter.enumCategorias.ProductCategory;
 
 import java.math.BigDecimal;
 
@@ -34,7 +35,8 @@ public class Product {
     private Integer estoque;
 
     @NotBlank(message = "campo categoria não pode ser vazio")
-    private String categoria;
+    @Enumerated(EnumType.STRING)
+    private ProductCategory categoria;
 
     private String imageUrl;
 
