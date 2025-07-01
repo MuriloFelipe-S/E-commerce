@@ -1,5 +1,6 @@
 package starter.service;
 
+import lombok.extern.slf4j.Slf4j;
 import starter.DTO.ProductRequest;
 import starter.DTO.ProductResponse;
 import starter.entity.Product;
@@ -9,7 +10,6 @@ import starter.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import starter.repository.ProductRepository;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 public class ProductService {
 
@@ -74,7 +75,9 @@ public class ProductService {
     }
 
     public void deletarProduto(Long id) { //metodo para deletar um produto
-        productRepository.deleteById(id); //deleta o produto do banco de dados pelo ID
+        buscarProdutoPorId(id); //busca o produto pelo ID para verificar se ele existe
+        productRepository.deleteById(id); //deleta o produto do banco de dados pelo ID se existir
+        log.info("Produto com o ID {} foi deletado com sucesso.", id); //loga a mensagem de sucesso no console
     }
 
     public List<Long> deletarVariosProdutos(List<Long> ids) { //metodo para deletar varios produtos
