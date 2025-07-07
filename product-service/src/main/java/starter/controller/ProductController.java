@@ -108,13 +108,13 @@ public class ProductController {
         return ResponseEntity.ok(response); // Retorna a lista de produtos inativos encontrados
     }
 
-    @PutMapping("{id}")
+    @PutMapping("{id}/atualizar")
     public ResponseEntity<ProductResponse> atualizar(@PathVariable Long id, @RequestBody @Valid ProductRequest productRequest) { // anotacoes @PathVariable e @RequestBody são usadas para capturar o ID do produto da URL, @Valid é usado para validar o DTO de requisição
         Product productAtualizado = productService.atualizarProduto(id, productRequest); // Atualiza o produto com os dados do DTO de requisição
         return ResponseEntity.ok(toResponse(productAtualizado)); // Retorna o produto atualizado
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("{id}/atualizar-parcial")
     public ResponseEntity<ProductResponse> atualizarParcial(@PathVariable Long id, @RequestBody @Valid Map<String, Object> campos) { // @PatchMapping é usado para atualizar parcialmente o produto, Map<String, Object> permite receber apenas alguns campos do produto
         Product productAtualizado = productService.atualizarParcialmente(id, campos); // Atualiza parcialmente o produto com os dados do DTO de requisição
         return ResponseEntity.ok(toResponse(productAtualizado)); // Retorna o produto atualizado

@@ -1,6 +1,7 @@
 package starter.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,8 +9,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import starter.enumCategorias.ProductCategory;
+import starter.enumCategorias.SubCategory;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Table(name = "product") // nome da tabela no banco de dados
 @Entity // anotação que indica que essa classe é uma entidade JPA
@@ -34,21 +38,32 @@ public class Product {
     @NotNull(message = "campo estoque não pode ser vazio")
     private Integer estoque;
 
-    @NotBlank(message = "campo categoria não pode ser vazio")
+    @NotNull(message = "campo categoria não pode ser vazio")
     @Enumerated(EnumType.STRING)
     private ProductCategory categoria;
+
+    @NotNull(message = "campo subcategoria não pode ser vazio")
+    @Enumerated
+    private SubCategory subCategoria;
 
     private String imageUrl;
 
     @NotNull(message = "campo disponibilidade não pode ser vazio")
     private boolean ativo;
 
-    public Product(String nome, String descricao, BigDecimal preco, Integer estoque, ProductCategory categoria, String imageUrl, boolean ativo) {
+    @JsonIgnore private BigDecimal desconto;
+
+    @JsonIgnore private LocalDate dataInicio;
+
+    @JsonIgnore private LocalDate dataFim;
+
+    public Product(String nome, String descricao, BigDecimal preco, Integer estoque, ProductCategory categoria, SubCategory subCategoria, String imageUrl, boolean ativo) {
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
         this.estoque = estoque;
         this.categoria = categoria;
+        this.subCategoria = subCategoria;
         this.imageUrl = imageUrl;
         this.ativo = ativo;
     }

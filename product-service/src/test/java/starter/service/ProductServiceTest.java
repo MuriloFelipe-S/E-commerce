@@ -17,10 +17,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
 
-    @InjectMocks
+    @InjectMocks // Injetando a instância do ProductService que será testada
     private ProductService productService;
 
-    @Mock
+    @Mock //
     private ProductRepository productRepository;
 
     @Test

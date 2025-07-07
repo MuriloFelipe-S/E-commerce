@@ -1,8 +1,10 @@
 package starter.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import starter.DTO.ProductRequest;
 import starter.DTO.ProductResponse;
+import starter.DTO.PromotionRequest;
 import starter.entity.Product;
 import starter.enumCategorias.ProductCategory;
 import starter.enumCategorias.SubCategory;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import starter.repository.ProductRepository;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Map;
 import org.springframework.util.ReflectionUtils;
@@ -92,7 +95,7 @@ public class ProductService {
                         .toList();// converte o resultado para uma lista de IDs não encontrados
 
         if (!naoEncontrados.isEmpty()) {// verifica se existem IDs não encontrados
-            System.out.println("Os seguintes IDs não foram encontrados: {}" + naoEncontrados);// imprime os IDs não encontrados no console
+            System.out.println("Os seguintes IDs não foram encontrados: {"+ naoEncontrados+"}");// imprime os IDs não encontrados no console
         }
 
         productRepository.deleteAllInBatch(produtos);// deleta todos os produtos encontrados em lote
@@ -168,6 +171,25 @@ public class ProductService {
 
     public List<Product> listarProdutosInativos() { //metodo para listar produtos inativos
         return productRepository.findByAtivoFalse(); //retorna os produtos inativos do banco de dados
+    }
+
+    public void aplicarDesconto(Long id, PromotionRequest promotionRequest) { //metodo para aplicar desconto em produtos
+        Product produto = buscarProdutoPorId(id); //busca o produto pelo ID
+
+        BigDecimal precoOriginal = produto.getPreco(); //pega o preço original do produto
+        BigDecimal desconto = precoOriginal //prepara o desconto
+                .multiply(promotionRequest.desconto()) //multiplica o preço original pelo desconto
+                .divide(BigDecimal.valueOf(100), 2 , RoundingMode.HALF_UP); //calcula o valor do desconto em relação ao preço original, arredondando para duas casas decimais
+
+        BigDecimal precoComDesconto = precoOriginal.subtract(desconto); //subtrai o desconto do preço original
+
+        produto.setDesconto(precoComDesconto); //define o preço com desconto no produto
+        produto.setDesconto(promotionRequest.desconto()); //define o desconto no produto
+        produto.setDataInicio(promotionRequest.dataInicio()); //define a data de início da promoção
+        produto.setDataFim(promotionRequest.dataFim()); //define a data de fim da promoção
+
+        productRepository.save(produto); //salva o produto atualizado no banco de dados
+
     }
 
 }
