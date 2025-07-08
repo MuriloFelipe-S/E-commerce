@@ -33,6 +33,41 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository; //injetando o repositório de produtos
 
+    public void preencherProduct(Product product, ProductRequest productRequest) { //metodo para preencher os dados do produto com os dados do DTO de requisição
+        product.setNome(productRequest.nome());
+        product.setDescricao(productRequest.descricao());
+        product.setPreco(productRequest.preco());
+        product.setEstoque(productRequest.estoque());
+        product.setCategoria(productRequest.categoria());
+        product.setSubCategoria(productRequest.subCategoria());
+        product.setImageUrl(productRequest.imageUrl());
+        product.setAtivo(productRequest.ativo());
+    }
+
+    public void preecherProductResponse(Product product, ProductResponse productResponse){
+        product.setId(productResponse.id());
+        product.setNome(productResponse.nome());
+        product.setDescricao(productResponse.descricao());
+        product.setPreco(productResponse.preco());
+        product.setEstoque(productResponse.estoque());
+        product.setCategoria(productResponse.categoria());
+        product.setSubCategoria(productResponse.subCategory());
+        product.setImageUrl(productResponse.imageUrl());
+        product.setAtivo(productResponse.ativo());
+    }
+
+    public PromotionResponse DTOresponse(Product product) {
+        BigDecimal precoComDesconto = calcularPrecoComDesconto(product); //calcula o preço com desconto
+
+        return new PromotionResponse( //cria um novo objeto PromotionResponse com os dados do produto e o preço com desconto
+                product.getPreco(),
+                precoComDesconto,
+                product.getDesconto(),
+                product.getDataInicio(),
+                product.getDataFim()
+        );
+    }
+
     public Product criarProduto(ProductRequest request) { //metodo para criar um produto
         validarPreco(request.preco());
         Product produto = new Product();
@@ -52,6 +87,12 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Produto com o ID " + id + " não foi encontrado.")); //retorna o produto se encontrado, caso contrário lança uma exceção
     }
 
+    public ProductResponse buscarPorId(Long id) { //metodo para buscar um produto por ID e retornar como ProductResponse
+        Product product = buscarProdutoPorId(id); //busca o produto pelo ID
+        BigDecimal precoComDesconto = calcularPrecoComDesconto(product); //calcula o preço com desconto
+        return new ProductResponse(product); //retorna o produto encontrado como ProductResponse
+    }
+
     public List<Product> buscarTodosProdutos() { //metodo para buscar todos os produtos
         return productRepository.findAll(); //retorna todos os produtos do banco de dados
     }
@@ -60,16 +101,6 @@ public class ProductService {
         if (preco.compareTo(BigDecimal.ZERO) <= 0) { //verifica se o preço é nulo ou menor ou igual a zero
             throw new IllegalArgumentException("O preço do produto deve ser maior que zero"); //lança uma exceção se o preço for inválido
         }
-    }
-
-    public void preencherProduct(Product product, ProductRequest productRequest) { //metodo para preencher os dados do produto com os dados do DTO de requisição
-        product.setNome(productRequest.nome());
-        product.setDescricao(productRequest.descricao());
-        product.setPreco(productRequest.preco());
-        product.setEstoque(productRequest.estoque());
-        product.setCategoria(productRequest.categoria());
-        product.setImageUrl(productRequest.imageUrl());
-        product.setAtivo(productRequest.ativo());
     }
 
     public Product atualizarProduto(Long id, ProductRequest productRequest) { //metodo para atualizar um produto
@@ -175,17 +206,7 @@ public class ProductService {
         return productRepository.findByAtivoFalse(); //retorna os produtos inativos do banco de dados
     }
 
-    public PromotionResponse DTOresponse(Product product) {
-        BigDecimal precoComDesconto = calcularPrecoComDesconto(product); //calcula o preço com desconto
 
-        return new PromotionResponse( //cria um novo objeto PromotionResponse com os dados do produto e o preço com desconto
-                product.getPreco(),
-                precoComDesconto,
-                product.getDesconto(),
-                product.getDataInicio(),
-                product.getDataFim()
-        );
-    }
 
     public BigDecimal calcularPrecoComDesconto(Product product) {
         if (product.getDesconto() == null || product.getDataInicio() == null || product.getDataFim() == null) {
@@ -204,7 +225,7 @@ public class ProductService {
         return product.getPreco().subtract(valorDesconto); //subtrai o valor do desconto do preço original e retorna o preço com desconto
     }
 
-    public void aplicarDesconto(Long id, PromotionRequest promotionRequest) { //metodo para aplicar desconto em produtos
+    public PromotionResponse aplicarDesconto(Long id, PromotionRequest promotionRequest) { //metodo para aplicar desconto em produtos
         Product produto = buscarProdutoPorId(id); //busca o produto pelo ID
 
         produto.setDesconto(promotionRequest.desconto()); //define o desconto no produto
@@ -213,6 +234,15 @@ public class ProductService {
 
         productRepository.save(produto); //salva o produto atualizado no banco de dados
 
+        BigDecimal precoComDesconto = calcularPrecoComDesconto(produto); //calcula o preço com desconto
+
+        return new PromotionResponse(
+                produto.getPreco(),
+                precoComDesconto,
+                produto.getDesconto(), //retorna um novo objeto PromotionResponse com os dados do produto e o preço com desconto
+                produto.getDataInicio(),
+                produto.getDataFim()
+        );
     }
 
 }

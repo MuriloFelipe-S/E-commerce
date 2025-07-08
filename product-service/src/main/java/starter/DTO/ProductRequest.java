@@ -25,6 +25,7 @@ public record ProductRequest( // DTO para representar a requisição de criaçã
     @NotNull(message = "campo categoria não pode ser vazio")
     ProductCategory categoria,
 
+    @NotNull(message = "campo subcategoria não pode ser vazio")
     SubCategory subCategoria,
 
     String imageUrl,

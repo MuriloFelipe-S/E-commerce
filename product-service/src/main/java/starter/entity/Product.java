@@ -2,6 +2,7 @@ package starter.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,7 +44,7 @@ public class Product {
     private ProductCategory categoria;
 
     @NotNull(message = "campo subcategoria não pode ser vazio")
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private SubCategory subCategoria;
 
     private String imageUrl;
@@ -51,11 +52,11 @@ public class Product {
     @NotNull(message = "campo disponibilidade não pode ser vazio")
     private boolean ativo;
 
-    @JsonIgnore private BigDecimal desconto;
+    @JsonInclude(JsonInclude.Include.NON_NULL) private BigDecimal desconto;
 
-    @JsonIgnore private LocalDate dataInicio;
+    @JsonInclude(JsonInclude.Include.NON_NULL) private LocalDate dataInicio;
 
-    @JsonIgnore private LocalDate dataFim;
+    @JsonInclude(JsonInclude.Include.NON_NULL) private LocalDate dataFim;
 
     public Product(String nome, String descricao, BigDecimal preco, Integer estoque, ProductCategory categoria, SubCategory subCategoria, String imageUrl, boolean ativo) {
         this.nome = nome;

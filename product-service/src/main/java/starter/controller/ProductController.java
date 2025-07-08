@@ -37,6 +37,7 @@ public class ProductController {
                 product.getPreco(),
                 product.getEstoque(),
                 product.getCategoria(),
+                product.getSubCategoria(),
                 product.getImageUrl(),
                 product.isAtivo()
         );
@@ -84,8 +85,8 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> buscarProdutoPorId(@PathVariable Long id) {
-        Product productAtualizado = productService.buscarProdutoPorId(id); // Busca o produto pelo ID usando o serviço
-        return ResponseEntity.ok(toResponse(productAtualizado)); // Retorna o produto encontrado
+        ProductResponse productAtualizado = productService.buscarPorId(id); // Busca o produto pelo ID usando o serviço
+        return ResponseEntity.ok(productAtualizado); // Retorna o produto encontrado
     }
 
     @GetMapping("/search/ativo")
@@ -118,9 +119,7 @@ public class ProductController {
 
     @PutMapping("{id}/aplicar-desconto")
     public ResponseEntity<PromotionResponse> aplicarDesconto(@PathVariable Long id, @RequestBody @Valid PromotionRequest promotionRequest) {
-        productService.aplicarDesconto(id, promotionRequest); // Aplica o desconto ao produto com o ID fornecido
-        Product product = productService.buscarProdutoPorId(id); // Busca o produto atualizado pelo ID
-        PromotionResponse DTOresponse = productService.DTOresponse(product);
+        PromotionResponse DTOresponse = productService.aplicarDesconto(id, promotionRequest); // Aplica o desconto ao produto com o ID fornecido e retorna um DTO de resposta com os detalhes do desconto aplicado
         return ResponseEntity.ok(DTOresponse); // Retorna o desconto aplicado
     }
 

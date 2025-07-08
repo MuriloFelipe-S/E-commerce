@@ -2,6 +2,7 @@ package starter.DTO;
 
 import starter.entity.Product;
 import starter.enumCategorias.ProductCategory;
+import starter.enumCategorias.SubCategory;
 
 import java.math.BigDecimal;
 
@@ -14,6 +15,7 @@ public record ProductResponse( // DTO para representar a resposta do produto
     BigDecimal preco,
     Integer estoque,
     ProductCategory categoria,
+    SubCategory subCategory,
     String imageUrl,
     boolean ativo
 
@@ -26,6 +28,7 @@ public record ProductResponse( // DTO para representar a resposta do produto
             product.getPreco(),
             product.getEstoque(),
             product.getCategoria(),
+            product.getSubCategoria(),
             product.getImageUrl(),
             product.isAtivo()
         );
