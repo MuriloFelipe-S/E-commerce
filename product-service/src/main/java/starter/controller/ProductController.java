@@ -3,6 +3,8 @@ package starter.controller;
 import jakarta.validation.Valid;
 import starter.DTO.ProductRequest;
 import starter.DTO.ProductResponse;
+import starter.DTO.PromotionRequest;
+import starter.DTO.PromotionResponse;
 import starter.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -112,6 +114,14 @@ public class ProductController {
     public ResponseEntity<ProductResponse> atualizar(@PathVariable Long id, @RequestBody @Valid ProductRequest productRequest) { // anotacoes @PathVariable e @RequestBody são usadas para capturar o ID do produto da URL, @Valid é usado para validar o DTO de requisição
         Product productAtualizado = productService.atualizarProduto(id, productRequest); // Atualiza o produto com os dados do DTO de requisição
         return ResponseEntity.ok(toResponse(productAtualizado)); // Retorna o produto atualizado
+    }
+
+    @PutMapping("{id}/aplicar-desconto")
+    public ResponseEntity<PromotionResponse> aplicarDesconto(@PathVariable Long id, @RequestBody @Valid PromotionRequest promotionRequest) {
+        productService.aplicarDesconto(id, promotionRequest); // Aplica o desconto ao produto com o ID fornecido
+        Product product = productService.buscarProdutoPorId(id); // Busca o produto atualizado pelo ID
+        PromotionResponse DTOresponse = productService.DTOresponse(product);
+        return ResponseEntity.ok(DTOresponse); // Retorna o desconto aplicado
     }
 
     @PatchMapping("{id}/atualizar-parcial")

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import starter.DTO.ProductRequest;
 import starter.DTO.ProductResponse;
 import starter.DTO.PromotionRequest;
+import starter.DTO.PromotionResponse;
 import starter.entity.Product;
 import starter.enumCategorias.ProductCategory;
 import starter.enumCategorias.SubCategory;
@@ -15,6 +16,7 @@ import starter.repository.ProductRepository;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Map;
 import org.springframework.util.ReflectionUtils;
@@ -173,17 +175,38 @@ public class ProductService {
         return productRepository.findByAtivoFalse(); //retorna os produtos inativos do banco de dados
     }
 
+    public PromotionResponse DTOresponse(Product product) {
+        BigDecimal precoComDesconto = calcularPrecoComDesconto(product); //calcula o preço com desconto
+
+        return new PromotionResponse( //cria um novo objeto PromotionResponse com os dados do produto e o preço com desconto
+                product.getPreco(),
+                precoComDesconto,
+                product.getDesconto(),
+                product.getDataInicio(),
+                product.getDataFim()
+        );
+    }
+
+    public BigDecimal calcularPrecoComDesconto(Product product) {
+        if (product.getDesconto() == null || product.getDataInicio() == null || product.getDataFim() == null) {
+            return product.getPreco();
+        }
+
+        LocalDate hoje = LocalDate.now(); //pega a data atual
+        if (hoje.isBefore(product.getDataInicio()) || hoje.isAfter(product.getDataFim())) { //verifica se a data atual está fora do período da promoção
+            return product.getPreco(); //se estiver fora do período, retorna o preço original
+        }
+
+        BigDecimal valorDesconto = product.getPreco() //calcula o valor do desconto
+                .multiply(product.getDesconto())
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP); //divide o desconto por 100 e arredonda para duas casas decimais
+
+        return product.getPreco().subtract(valorDesconto); //subtrai o valor do desconto do preço original e retorna o preço com desconto
+    }
+
     public void aplicarDesconto(Long id, PromotionRequest promotionRequest) { //metodo para aplicar desconto em produtos
         Product produto = buscarProdutoPorId(id); //busca o produto pelo ID
 
-        BigDecimal precoOriginal = produto.getPreco(); //pega o preço original do produto
-        BigDecimal desconto = precoOriginal //prepara o desconto
-                .multiply(promotionRequest.desconto()) //multiplica o preço original pelo desconto
-                .divide(BigDecimal.valueOf(100), 2 , RoundingMode.HALF_UP); //calcula o valor do desconto em relação ao preço original, arredondando para duas casas decimais
-
-        BigDecimal precoComDesconto = precoOriginal.subtract(desconto); //subtrai o desconto do preço original
-
-        produto.setDesconto(precoComDesconto); //define o preço com desconto no produto
         produto.setDesconto(promotionRequest.desconto()); //define o desconto no produto
         produto.setDataInicio(promotionRequest.dataInicio()); //define a data de início da promoção
         produto.setDataFim(promotionRequest.dataFim()); //define a data de fim da promoção
