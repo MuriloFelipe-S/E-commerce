@@ -19,6 +19,8 @@ public record ProductRequest( // DTO para representar a requisição de criaçã
     @NotNull(message = "campo preço não pode ser vazio")
     BigDecimal preco,
 
+    BigDecimal desconto,
+
     @NotNull(message = "campo estoque não pode ser vazio")
     Integer estoque,
 
